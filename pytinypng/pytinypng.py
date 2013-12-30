@@ -9,13 +9,27 @@ except ImportError:
 
 from base64 import b64encode
 
-TINYURL_APIKEY = ''
-TINYURL_SHRINK_URL = "https://api.tinypng.com/shrink"
-TINYURL_SUCCESS = 201
-TINYURL_FATAL_ERRORS = ['Unauthorized', 'TooManyRequests']
-TINYURL_SERVER_ERROR = "InternalServerError"
+TINYPNG_SHRINK_URL = "https://api.tinypng.com/shrink"
+TINYPNG_SUCCESS = 201
+
+class TinyPNGError:
+    Unauthorized = 1
+    InputMissing = 2
+    BadSignature = 3
+    DecodeError = 4
+    TooManyRequests = 5
+    InternalServerError = 6
 
 class TinyPNGResponse:
+    errors = {
+        "Unauthorized": TinyPNGError.Unauthorized,
+        "InputMissing": TinyPNGError.InputMissing,
+        "BadSignature": TinyPNGError.BadSignature,
+        "DecodeError": TinyPNGError.DecodeError,
+        "TooManyRequests": TinyPNGError.TooManyRequests,
+        "InternalServerError": TinyPNGError.InternalServerError
+    }
+
     def __init__(self, status, **kwargs):
         self._status = status
         self._response = kwargs
@@ -26,7 +40,7 @@ class TinyPNGResponse:
 
     @property
     def success(self):
-        return self.status == TINYURL_SUCCESS
+        return self.status == TINYPNG_SUCCESS
 
     @property
     def failure(self):
@@ -34,7 +48,10 @@ class TinyPNGResponse:
 
     @property
     def errno(self):
-        return self._from_response('error')
+        err = self._from_response('error')
+        if err in self.errors:
+            return self.errors[err]
+        return None
 
     @property
     def errmsg(self):
@@ -56,6 +73,10 @@ class TinyPNGResponse:
     def compressed_image_url(self):
         return self._from_response('location')
 
+    @property
+    def output(self):
+        return self._from_response('output')
+
     def _from_response(self, key, default=None):
         if key in self._response:
             return self._response[key]
@@ -64,16 +85,22 @@ class TinyPNGResponse:
 class StopProcessing(Exception): pass
 class RetryProcessing(Exception): pass
 
-def tinypng_compress(image):
+def tinypng_compress(image, apikey):
     def process_response(response):
         json_res = json.loads(response.read())
-        if response.code == TINYURL_SUCCESS:
+        if response.code == TINYPNG_SUCCESS:
             json_res['location'] = response.headers.getheader("Location")
-
+            try:
+                json_res['output'] = urlopen(json_res['location']).read()
+            except:
+                json_res['output'] = None
         return (response.code, json_res)
 
-    request = Request(TINYURL_SHRINK_URL, image)
-    auth = b64encode(bytes("api:" + TINYURL_APIKEY)).decode("ascii")
+    if not apikey:
+        raise ValueError("TinyPNG API KEY is not set")
+
+    request = Request(TINYPNG_SHRINK_URL, image)
+    auth = b64encode(bytes("api:" + apikey)).decode("ascii")
     request.add_header("Authorization", "Basic %s" % auth)
     try:
         response = urlopen(request)
@@ -83,29 +110,24 @@ def tinypng_compress(image):
     return TinyPNGResponse(code, **response_dict)
 
 
-def tinypng_download(url):
-    return urlopen(url).read()
-
-
 basecallback = lambda x: x
-def tinypng_process_directory(source, dest, callback=basecallback):
+def tinypng_process_directory(source, dest, apikey, callback=basecallback):
     def process_file(input_file):
-        compressed = tinypng_compress(open(input_file, 'rb').read())
+        bytes_ = open(input_file, 'rb').read()
+        compressed = tinypng_compress(bytes_, apikey)
         callback(compressed)
 
-        if compressed.success:
-            image = tinypng_download(compressed.compressed_image_url)
-            if image:
-                dirname = os.path.dirname(input_file).replace(source, '')[1:]
-                filename = os.path.basename(input_file)
-                target_dir = os.path.join(dest, dirname)
-                if not os.path.exists(target_dir):
-                    os.makedirs(target_dir)
-                open(os.path.join(target_dir, filename), 'wb+').write(image)
+        if compressed.success and compressed.output:
+            dirname = os.path.dirname(input_file).replace(source, '')[1:]
+            filename = os.path.basename(input_file)
+            target_dir = os.path.join(dest, dirname)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            open(os.path.join(target_dir, filename), 'wb+').write(compressed.output)
         else:
-            if compressed.errno in TINYURL_FATAL_ERRORS:
+            if compressed.errno in (TinyPNGError.Unauthorized, TinyPNGError.TooManyRequests):
                 raise StopProcessing()
-            if compressed.errno == TINYURL_SERVER_ERROR:
+            if compressed.errno == TinyPNGError.InternalServerError:
                 raise RetryProcessing()
 
         return compressed
