@@ -7,4 +7,4 @@ def test_files_with_exts():
     pytinypng.os = fake_os
     pytinypng.open = fake_open
     files = pytinypng.files_with_exts('input', '.png')
-    assert len(files) > 0
+    assert files

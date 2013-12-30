@@ -1,7 +1,8 @@
 import json
 import pytest
 from .helper import *
-from ..pytinypng import tinypng_compress, TinyPNGError
+from ..response import *
+from ..pytinypng import tinypng_compress
 
 
 def test_tinypng_compress():

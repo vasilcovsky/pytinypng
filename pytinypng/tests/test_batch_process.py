@@ -36,3 +36,20 @@ def test_tinypng_process_stop():
     pytinypng.tinypng_process_directory('/input', '/output', '12345', _callback)
     assert _callback.total == 1
 
+
+def test_tinypng_process_retry():
+    def fake_compress(*args):
+        return pytinypng.TinyPNGResponse(500, error='InternalServerError', message='...')
+
+    _callback.total = 0
+
+    pytinypng.TINYPNG_SLEEP_SEC = 0
+    pytinypng.tinypng_compress = fake_compress
+
+    (fake_fs, fake_os, fake_open) = init_filesystem()
+
+    pytinypng.os = fake_os
+    pytinypng.open = fake_open
+    pytinypng.tinypng_process_directory('/input', '/output', '12345', _callback)
+    assert _callback.total == 20
+
