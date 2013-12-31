@@ -20,7 +20,7 @@ def tinypng_process_directory(source, dest, apikey,
                               item_callback=None, begin_callback=None, retry_callback=None):
     def process_file(input_file):
         bytes_ = open(input_file, 'rb').read()
-        compressed = shrink(bytes_, apikey, filename=input_file)
+        compressed = shrink(bytes_, apikey, filename=input_file.replace(source, ''))
         if item_callback:
             item_callback(compressed)
 

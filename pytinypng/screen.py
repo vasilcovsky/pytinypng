@@ -21,7 +21,7 @@ def item_row(image):
     filename = image.filename[-30:].ljust(30, ' ')
 
     if image.success:
-        print("%s %16s %32s" % (filename, green("OK"), image.output_ratio))
+        print("%s %16s %37s" % (filename, green("OK"), image.output_ratio))
     else:
         print("%s %18s %30s" % (filename, red("FAIL"), "-"))
 
