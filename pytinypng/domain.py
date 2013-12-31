@@ -71,7 +71,3 @@ class TinyPNGResponse:
     @property
     def bytes(self):
         return self._properties['bytes']
-
-    @property
-    def filename(self):
-        return self._properties['filename'] or ''

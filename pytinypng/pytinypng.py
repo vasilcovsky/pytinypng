@@ -13,19 +13,16 @@ class StopProcessing(Exception): pass
 class RetryProcessing(Exception): pass
 
 
-def tinypng_process_directory(source, dest, apikey,
-                              item_callback=None, begin_callback=None, retry_callback=None):
-    def process_file(input_file):
+def process_directory(source, dest, apikey,
+                      item_callback=None, begin_callback=None, retry_callback=None, skip_callback=None, allow_overwrite=False):
+    def process_file(input_file, output_file):
         bytes_ = open(input_file, 'rb').read()
-        compressed = shrink(bytes_, apikey, filename=input_file.replace(source, ''))
+        compressed = shrink(bytes_, apikey)
         if item_callback:
-            item_callback(compressed)
+            item_callback(compressed, filename=input_file.replace(source, ''))
 
         if compressed.success and compressed.bytes:
-            target_dir, filename = target_path(source, dest, input_file)
-            if not os.path.exists(target_dir):
-                os.makedirs(target_dir)
-            open(os.path.join(target_dir, filename), 'wb+').write(compressed.bytes)
+            open(output_file, 'wb+').write(compressed.bytes)
         else:
             if compressed.errno in (TinyPNGError.Unauthorized, TinyPNGError.TooManyRequests):
                 raise StopProcessing()
@@ -42,8 +39,17 @@ def tinypng_process_directory(source, dest, apikey,
     input_file = next(input_files, None)
 
     while input_file:
+        dirname, basename, output_file = target_path(source, dest, input_file)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        elif os.path.exists(output_file) and not allow_overwrite:
+            if skip_callback:
+                skip_callback(input_file)
+            input_file = next(input_files, None)
+            continue
+
         try:
-            process_file(input_file)
+            process_file(input_file, output_file)
             input_file = next(input_files, None)
         except StopProcessing:
             break
@@ -75,8 +81,9 @@ if __name__ == '__main__':
     output_dir = os.path.relpath(args.output)
 
     try:
-        tinypng_process_directory(input_dir, output_dir, args.apikey,
+        process_directory(input_dir, output_dir, args.apikey,
                                   item_callback=screen.item_row,
+                                  skip_callback=screen.skip_item,
                                   begin_callback=screen.table_header)
     except KeyboardInterrupt:
         pass

@@ -16,9 +16,9 @@ def files_with_exts(root='.', suffix=''):
             if filename.endswith(suffix))
 
 
-def target_path(source, dest, input_file):
-    dirname = os.path.dirname(input_file).replace(source, '')[1:]
-    filename = os.path.basename(input_file)
-    target_dir = os.path.join(dest, dirname)
-    target_file = os.path.join(target_dir, filename)
-    return (target_dir, filename)
+def target_path(source_dir, target_dir, input_file):
+    relative_target_dir = os.path.dirname(input_file).replace(source_dir, '')[1:]
+    basename = os.path.basename(input_file)
+    dirname = os.path.join(target_dir, relative_target_dir)
+    realpath = os.path.join(dirname, basename)
+    return (dirname, basename, realpath)
