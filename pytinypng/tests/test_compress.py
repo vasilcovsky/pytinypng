@@ -1,26 +1,29 @@
 import pytest
-from pytinypng.pytinypng import tinypng_compress, TinyPNGError
+from pytinypng.api import shrink
+from pytinypng.domain import TinyPNGError
 from pytinypng.tests.helper import success_result, failure
 
 def test_tinypng_compress():
     with success_result():
-        compressed = tinypng_compress('<image bytes>', apikey='12345')
+        compressed = shrink('<image bytes>', apikey='12345')
         assert compressed.success == True
         assert compressed.failure == False
         assert compressed.input_size == 100
-        assert compressed.output == '<compressed image bytes>'
+        assert compressed.output_size == 50
+        assert compressed.output_ratio == 2
+        assert compressed.bytes == '<compressed image bytes>'
         assert compressed.errno == None
 
 
 def test_tinypng_compress_empty_key():
     """tinypng_compress should raise ValueError if apikey is empty""" 
     with pytest.raises(ValueError):
-        compressed = tinypng_compress('<image bytes>', '')
+        compressed = shrink('<image bytes>', '')
 
 
 def test_tinypng_compress_error():
     with failure():
-        compressed = tinypng_compress('<image bytes>', apikey='12345')
+        compressed = shrink('<image bytes>', apikey='12345')
         assert compressed.failure == True
         assert compressed.errno == TinyPNGError.TooManyRequests
-        assert compressed.output == None
+        assert compressed.bytes == None
