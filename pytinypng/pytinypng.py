@@ -9,11 +9,8 @@ import screen
 
 TINYPNG_SLEEP_SEC = 1
 
-class StopProcessing(Exception):
-    pass
-
-class RetryProcessing(Exception):
-    pass
+class StopProcessing(Exception): pass
+class RetryProcessing(Exception): pass
 
 
 def tinypng_process_directory(source, dest, apikey,
@@ -77,6 +74,9 @@ if __name__ == '__main__':
     input_dir = os.path.realpath(args.input)
     output_dir = os.path.relpath(args.output)
 
-    tinypng_process_directory(input_dir, output_dir, args.apikey,
-                              item_callback=screen.item_row,
-                              begin_callback=screen.table_header)
+    try:
+        tinypng_process_directory(input_dir, output_dir, args.apikey,
+                                  item_callback=screen.item_row,
+                                  begin_callback=screen.table_header)
+    except KeyboardInterrupt:
+        pass

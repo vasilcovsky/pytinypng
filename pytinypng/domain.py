@@ -1,5 +1,5 @@
+from collections import defaultdict
 from utils import Enum
-
 
 class TinyPNGError(Enum):
     Unauthorized = 1
@@ -17,6 +17,8 @@ class TinyPNGResponse:
     def __init__(self, status, **kwargs):
         self._status = status
         self._response = kwargs
+        self._properties = defaultdict(lambda: None)
+        self._properties.update(kwargs)
 
     @property
     def status(self):
@@ -32,46 +34,44 @@ class TinyPNGResponse:
 
     @property
     def errno(self):
-        err = self._from_response('error')
+        err = self._properties['error']
         if err:
             return TinyPNGError.from_value(err)
         return None
 
     @property
     def errmsg(self):
-        return self._from_response('message')
+        return self._properties['message']
 
     @property
     def input_size(self):
-        input_ = self._from_response('input')
-        if input_:
-           return input_['size']
+        input = self._properties['input']
+        if input and 'size' in input:
+           return input['size']
+        return None
 
     @property
     def output_size(self):
-        output = self._from_response('output')
-        if output:
+        output = self._properties['output']
+        if output and 'size' in output:
             return output['size']
+        return None
 
     @property
     def output_ratio(self):
-        output = self._from_response('output')
-        if output:
+        output = self._properties['output']
+        if output and 'ratio' in output:
             return output['ratio']
+        return None
 
     @property
     def compressed_image_url(self):
-        return self._from_response('location')
+        return self._properties['location']
 
     @property
     def bytes(self):
-        return self._from_response('bytes')
+        return self._properties['bytes']
 
     @property
     def filename(self):
-        return self._from_response('filename') or ''
-
-    def _from_response(self, key, default=None):
-        if key in self._response:
-            return self._response[key]
-        return default
+        return self._properties['filename'] or ''
