@@ -12,24 +12,25 @@ TINYPNG_SLEEP_SEC = 1
 class StopProcessing(Exception): pass
 class RetryProcessing(Exception): pass
 
+def _process_file(input_file, output_file, apikey, callback=None):
+    bytes = open(input_file, 'rb').read()
+    compressed = shrink(bytes, apikey)
+    if callback:
+        callback(compressed, filename=input_file)
+
+    if compressed.success and compressed.bytes:
+        open(output_file, 'wb+').write(compressed.bytes)
+    else:
+        if compressed.errno in (TinyPNGError.Unauthorized, TinyPNGError.TooManyRequests):
+            raise StopProcessing()
+        if compressed.errno == TinyPNGError.InternalServerError:
+            raise RetryProcessing()
+
+    return compressed
+
 
 def process_directory(source, dest, apikey,
                       item_callback=None, begin_callback=None, retry_callback=None, skip_callback=None, allow_overwrite=False):
-    def process_file(input_file, output_file):
-        bytes_ = open(input_file, 'rb').read()
-        compressed = shrink(bytes_, apikey)
-        if item_callback:
-            item_callback(compressed, filename=input_file.replace(source, ''))
-
-        if compressed.success and compressed.bytes:
-            open(output_file, 'wb+').write(compressed.bytes)
-        else:
-            if compressed.errno in (TinyPNGError.Unauthorized, TinyPNGError.TooManyRequests):
-                raise StopProcessing()
-            if compressed.errno == TinyPNGError.InternalServerError:
-                raise RetryProcessing()
-
-        return compressed
 
     if begin_callback:
         begin_callback()
@@ -49,7 +50,7 @@ def process_directory(source, dest, apikey,
             continue
 
         try:
-            process_file(input_file, output_file)
+            _process_file(input_file, output_file, apikey, item_callback)
             input_file = next(input_files, None)
         except StopProcessing:
             break
