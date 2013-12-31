@@ -1,9 +1,6 @@
-import json
 import pytest
-from .helper import *
-from ..response import *
-from ..pytinypng import tinypng_compress
-
+from pytinypng.pytinypng import tinypng_compress, TinyPNGError
+from pytinypng.tests.helper import success_result, failure
 
 def test_tinypng_compress():
     with success_result():

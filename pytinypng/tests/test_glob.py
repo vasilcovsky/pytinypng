@@ -1,6 +1,5 @@
-import pytest
 from .. import pytinypng
-from .helper import *
+from pytinypng.tests.helper import *
 
 def test_files_with_exts():
     fake_fs, fake_os, fake_open = init_filesystem()

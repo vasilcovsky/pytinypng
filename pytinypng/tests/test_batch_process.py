@@ -1,6 +1,5 @@
-import pytest
-from .helper import *
 from .. import pytinypng
+from pytinypng.tests.helper import success_result, init_filesystem
 
 
 def _callback(compressed):
