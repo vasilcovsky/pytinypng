@@ -39,30 +39,32 @@ def process_directory(source, dest, apikey, handler, allow_overwrite=False):
 
     attempts = defaultdict(lambda: 0)
     input_files = files_with_exts(source, suffix='.png')
-    input_file = next(input_files, None)
+    next_ = lambda: next(input_files, None)
 
-    while input_file:
-        dirname, basename, output_file = target_path(source, dest, input_file)
+    current_file = next_()
+
+    while current_file:
+        dirname, basename, output_file = target_path(source, dest, current_file)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
         elif os.path.exists(output_file) and not allow_overwrite:
-            handler.on_skip(input_file)
-            input_file = next(input_files, None)
+            handler.on_skip(current_file)
+            current_file = next_()
             continue
 
         try:
-            handler.on_pre_item(input_file)
-            _process_file(input_file, output_file, apikey, handler.on_post_item)
-            input_file = next(input_files, None)
+            handler.on_pre_item(current_file)
+            _process_file(current_file, output_file, apikey, handler.on_post_item)
+            current_file = next_()
         except StopProcessing:
             break
         except RetryProcessing:
-            handler.on_retry(input_file)
+            handler.on_retry(current_file)
             time.sleep(TINYPNG_SLEEP_SEC)
-            if attempts[input_file] < 9:
-                attempts[input_file] += 1
+            if attempts[current_file] < 9:
+                attempts[current_file] += 1
             else:
-                input_file = next(input_files, None)
+                current_file = next_()
 
 
 if __name__ == '__main__':
