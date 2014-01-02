@@ -1,6 +1,7 @@
 import os
 import time
 import argparse
+from os.path import realpath
 from collections import defaultdict
 from domain import TinyPNGError
 from api import shrink
@@ -70,12 +71,12 @@ def process_directory(source, dest, apikey, handler, allow_overwrite=False):
 
 
 def main(args):
-    input_dir = os.path.realpath(args.input)
+    input_dir = realpath(args.input)
 
     if not args.output:
         output_dir = input_dir + "-output"
     else:
-        output_dir = os.path.relpath(args.output)
+        output_dir = realpath(args.output)
 
     handler = ScreenHandler()
 
@@ -86,6 +87,9 @@ def main(args):
 
 
 if __name__ == '__main__':
+    """TODO:
+    add support for allow overwrite
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('input',
                         metavar='INPUT',
