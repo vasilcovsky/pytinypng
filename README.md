@@ -1,10 +1,14 @@
-pytinypng
----------
+#  Batch compression for PNG images
 
-Command line tool for batch optimization png images using [tinypng.com] written in Python.
+```pytinypng``` is a batch image compression tool for optimizing thousands of images in png format. Under the hook it uses [tinypng.com](http://tinypng.com) API to shrink png files.
 
-## Description
-pytinypng is a image optimization program that shinks image using [tinypng.com].
+**Features**
+ * Optimized files are saving on disk keeping original directory structure
+ * Skip already optimized files.
 
-## Features
- * Optimize image keeping directory structure
+## Installation
+ 1. Obtain TinyPNG API key on [Developer API page](https://api.tinypng.com/developers)
+ 2. ...
+
+## Usage
+```pytinypng input-directory output-directory --apikey <API_KEY>```
