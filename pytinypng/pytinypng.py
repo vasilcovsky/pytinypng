@@ -67,26 +67,32 @@ def process_directory(source, dest, apikey, handler, allow_overwrite=False):
                 current_file = next_()
 
 
+def main(args):
+    input_dir = os.path.realpath(args.input)
+
+    if not args.output:
+        output_dir = input_dir + "-output"
+    else:
+        output_dir = os.path.relpath(args.output)
+
+    try:
+        process_directory(input_dir, output_dir, args.apikey, ScreenHandler())
+    except KeyboardInterrupt:
+        pass
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('apikey',
-                        metavar='APIKEY',
-                        help='TinyPNG API Key')
     parser.add_argument('input',
                         metavar='INPUT',
                         help='Input directory with PNG files')
-    parser.add_argument('output',
+    parser.add_argument('output', nargs='?',
                         metavar='OUTPUT',
                         help='Output directory')
+    parser.add_argument('--apikey',
+                        metavar='APIKEY',
+                        default=os.environ.get('TINYPNG_APIKEY'),
+                        help='TinyPNG API Key')
 
     args = parser.parse_args()
-
-    input_dir = os.path.realpath(args.input)
-    output_dir = os.path.relpath(args.output)
-
-    handler = ScreenHandler()
-
-    try:
-        process_directory(input_dir, output_dir, args.apikey, handler)
-    except KeyboardInterrupt:
-        pass
+    main(args)
