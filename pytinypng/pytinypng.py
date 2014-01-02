@@ -66,6 +66,8 @@ def process_directory(source, dest, apikey, handler, allow_overwrite=False):
             else:
                 current_file = next_()
 
+    handler.on_finish()
+
 
 def main(args):
     input_dir = os.path.realpath(args.input)
