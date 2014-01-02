@@ -20,19 +20,19 @@ class TinyPNGResponse:
 
     SUCCESS_CODE = 201
 
-    def __init__(self, status, **kwargs):
-        self._status = status
+    def __init__(self, response_code, **kwargs):
+        self._response_code = response_code
         self._response = kwargs
         self._properties = defaultdict(lambda: None)
         self._properties.update(kwargs)
 
     @property
-    def status(self):
-        return self._status
+    def response_code(self):
+        return self._response_code
 
     @property
     def success(self):
-        return self.status == self.SUCCESS_CODE
+        return self.response_code == self.SUCCESS_CODE
 
     @property
     def failure(self):
@@ -51,23 +51,23 @@ class TinyPNGResponse:
 
     @property
     def input_size(self):
-        input = self._properties['input']
-        if input and 'size' in input:
-            return input['size']
+        input_ = self._properties['input']
+        if input_:
+            return input_.get('size')
         return None
 
     @property
     def output_size(self):
         output = self._properties['output']
-        if output and 'size' in output:
-            return output['size']
+        if output:
+            return output.get('size')
         return None
 
     @property
     def output_ratio(self):
         output = self._properties['output']
-        if output and 'ratio' in output:
-            return output['ratio']
+        if output:
+            return output.get('ratio')
         return None
 
     @property
