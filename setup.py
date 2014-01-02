@@ -13,7 +13,7 @@ setup(
     keywords='tinyping compression png optimization',
     author='Igor Vasilcovsky',
     author_email='vasilcovsky@gmail.com',
-    url='http://github.com/vasilcovsky/pytinypng.py',
+    url='https://github.com/vasilcovsky/pytinypng',
     license='BSD License',
     packages=find_packages(exclude=['tests']),
     install_requires=[],
