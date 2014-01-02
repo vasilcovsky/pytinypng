@@ -1,5 +1,5 @@
 from __future__ import print_function
-
+import os
 
 class BaseHandler:
     def __init__(self):
@@ -38,8 +38,13 @@ yellow = _decorated_msg('\033[93m')
 
 
 class ScreenHandler(BaseHandler):
-    def format_filename(self, filename):
-        return filename[-30:].ljust(30, ' ')
+
+    def __init__(self):
+        self._optimized = 0
+        self._skipped = 0
+        self._failed = 0
+        self._input_bytes = 0
+        self._output_bytes = 0
 
     def on_skip(self, input_file):
         self._skipped += 1
@@ -50,21 +55,29 @@ class ScreenHandler(BaseHandler):
         filename = self.format_filename(input_file)
         if response.success:
             self._optimized += 1
+            self._input_bytes += response.input_size
+            self._output_bytes += response.output_size
             print("%s %16s %37s" % (filename, green("OK"), response.output_ratio))
         else:
+            self._failed += 1
             print("%s %18s %30s" % (filename, red("FAIL"), "-"))
 
     def on_start(self):
         print("\n%s %45s %40s\n" % (bold("FILE"), bold("STATUS"), bold("RATIO")))
 
     def on_finish(self):
+        optimized = "%(optimized)s (%(input)s -> %(output)s) bytes" % dict(optimized=self._optimized,
+                                                                        input=self._input_bytes,
+                                                                        output=self._output_bytes)
         print()
-        print(bold("Optimized: ") + str(self._optimized), end="\t")
+        print(bold("Optimized: ") + optimized, end="\t")
         print(bold("Skipped: ") + str(self._skipped), end="\t")
         print(bold("Failed: ") + str(self._failed), end="\t")
         print("\n\n")
 
-    def __init__(self):
-        self._optimized = 0
-        self._skipped = 0
-        self._failed = 0
+    def format_filename(self, filename):
+        filename_ = filename[-27:].ljust(27, ' ')
+        if filename > 30:
+            filename_ = '...' + filename_
+
+        return filename_
