@@ -21,6 +21,7 @@ def read_binary(filename):
     with open(filename, 'rb') as f:
         return f.read()
 
+
 def files_with_exts(root='.', suffix=''):
     return (os.path.join(rootdir, filename)
             for rootdir, dirnames, filenames in os.walk(root)
@@ -33,7 +34,7 @@ def target_path(source_dir, target_dir, input_file):
     basename = os.path.basename(input_file)
     dirname = os.path.join(target_dir, rel_target_dir)
     realpath = os.path.join(dirname, basename)
-    return (dirname, basename, realpath)
+    return realpath
 
 
 def size_fmt(num):
@@ -42,6 +43,33 @@ def size_fmt(num):
             return "%.1f%s" % (num, x)
         num /= 1024.0
     return "%.1f%s" % (num, 'TB')
+
+
+def find_apikey():
+    """Finds TinyPNG API key
+
+    Search for api key in following order:
+     - environment variable TINYPNG_APIKEY
+     - environment variable TINYPNG_API_KEY
+     - file in local directory tinypng.key
+     - file in home directory ~/.tinypng.key
+
+    If key not found returns None
+    """
+    env_keys = ['TINYPNG_APIKEY', 'TINYPNG_API_KEY']
+    paths = []
+    paths.append(os.path.join(os.path.abspath("."), "tinypng.key"))  # local directory
+    paths.append(os.path.expanduser("~/.tinypng.key"))  # home directory
+
+    for env_key in env_keys:
+        if os.environ.get(env_key):
+            return os.environ.get(env_key)
+
+    for path in paths:
+        if os.path.exists(path):
+            return open(path, 'rt').read()
+
+    return None
 
 
 def _decorated_msg(code):

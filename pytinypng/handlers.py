@@ -9,7 +9,7 @@ class BaseHandler:
     def on_start(self):
         pass
 
-    def on_start(self):
+    def on_stop(self, errmsg):
         pass
 
     def on_retry(self, input_file):
@@ -57,6 +57,10 @@ class ScreenHandler(BaseHandler):
     def on_start(self):
         print("\n%s %45s %40s\n" % (bold("FILE"), bold("STATUS"),
                                     bold("RATIO")))
+
+    def on_stop(self, errmsg):
+        print("Error: " + errmsg)
+        print()
 
     def on_finish(self):
         optimized = "%(optimized)s (%(input)s -> %(output)s)"
