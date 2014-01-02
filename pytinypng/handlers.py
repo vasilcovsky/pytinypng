@@ -1,6 +1,7 @@
 from __future__ import print_function
 from utils import size_fmt, bold, yellow, red, green
 
+
 class BaseHandler:
     def __init__(self):
         pass
@@ -47,13 +48,15 @@ class ScreenHandler(BaseHandler):
             self._optimized += 1
             self._input_bytes += response.input_size
             self._output_bytes += response.output_size
-            print("%s %16s %37s" % (filename, green("OK"), response.output_ratio))
+            print("%s %16s %37s" % (filename, green("OK"),
+                                    response.output_ratio))
         else:
             self._failed += 1
             print("%s %18s %30s" % (filename, red("FAIL"), "-"))
 
     def on_start(self):
-        print("\n%s %45s %40s\n" % (bold("FILE"), bold("STATUS"), bold("RATIO")))
+        print("\n%s %45s %40s\n" % (bold("FILE"), bold("STATUS"),
+                                    bold("RATIO")))
 
     def on_finish(self):
         optimized = "%(optimized)s (%(input)s -> %(output)s)"

@@ -17,15 +17,15 @@ def files_with_exts(root='.', suffix=''):
 
 
 def target_path(source_dir, target_dir, input_file):
-    relative_target_dir = os.path.dirname(input_file).replace(source_dir, '')[1:]
+    rel_target_dir = os.path.dirname(input_file).replace(source_dir, '')[1:]
     basename = os.path.basename(input_file)
-    dirname = os.path.join(target_dir, relative_target_dir)
+    dirname = os.path.join(target_dir, rel_target_dir)
     realpath = os.path.join(dirname, basename)
     return (dirname, basename, realpath)
 
 
 def size_fmt(num):
-    for x in ['b','KB','MB','GB']:
+    for x in ['b', 'KB', 'MB', 'GB']:
         if num < 1024.0:
             return "%.1f%s" % (num, x)
         num /= 1024.0

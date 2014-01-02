@@ -10,6 +10,7 @@ except ImportError:
 
 TINYPNG_SHRINK_URL = "https://api.tinypng.com/shrink"
 
+
 def shrink(image, apikey, filename=None):
     def _handle_response(response):
         json_res = json.loads(response.read())

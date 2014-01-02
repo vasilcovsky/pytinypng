@@ -1,6 +1,7 @@
 from collections import defaultdict
 from utils import Enum
 
+
 class TinyPNGError(Enum):
     Unauthorized = 1
     InputMissing = 2
@@ -47,7 +48,7 @@ class TinyPNGResponse:
     def input_size(self):
         input = self._properties['input']
         if input and 'size' in input:
-           return input['size']
+            return input['size']
         return None
 
     @property

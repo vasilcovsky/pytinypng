@@ -10,8 +10,13 @@ from utils import files_with_exts, target_path
 
 TINYPNG_SLEEP_SEC = 1
 
-class StopProcessing(Exception): pass
-class RetryProcessing(Exception): pass
+
+class StopProcessing(Exception):
+    pass
+
+
+class RetryProcessing(Exception):
+    pass
 
 
 def _process_file(input_file, output_file, apikey, callback=None):
@@ -23,7 +28,8 @@ def _process_file(input_file, output_file, apikey, callback=None):
     if compressed.success and compressed.bytes:
         open(output_file, 'wb+').write(compressed.bytes)
     else:
-        if compressed.errno in (TinyPNGError.Unauthorized, TinyPNGError.TooManyRequests):
+        if compressed.errno in (TinyPNGError.Unauthorized,
+                                TinyPNGError.TooManyRequests):
             raise StopProcessing()
         if compressed.errno == TinyPNGError.InternalServerError:
             raise RetryProcessing()
@@ -55,7 +61,10 @@ def process_directory(source, dest, apikey, handler, allow_overwrite=False):
 
         try:
             handler.on_pre_item(current_file)
-            _process_file(current_file, output_file, apikey, handler.on_post_item)
+
+            _process_file(current_file, output_file, apikey,
+                          handler.on_post_item)
+
             current_file = next_()
         except StopProcessing:
             break
