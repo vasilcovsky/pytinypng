@@ -7,8 +7,8 @@ def test_tinypng_process():
     (fake_fs, fake_os, fake_open) = init_filesystem()
 
     utils.os = fake_os
+    utils.open = fake_open
     pytinypng.os = fake_os
-    pytinypng.open = fake_open
 
     with success_result():
         handler = TestHandler()
@@ -26,8 +26,8 @@ def test_tinypng_process_stop():
     (fake_fs, fake_os, fake_open) = init_filesystem()
 
     utils.os = fake_os
+    utils.open = fake_open
     pytinypng.os = fake_os
-    pytinypng.open = fake_open
 
     handler = TestHandler()
 
@@ -45,8 +45,8 @@ def test_tinypng_process_retry():
     (fake_fs, fake_os, fake_open) = init_filesystem()
 
     utils.os = fake_os
+    utils.open = fake_open
     pytinypng.os = fake_os
-    pytinypng.open = fake_open
 
     handler = TestHandler()
 
@@ -58,6 +58,7 @@ def test_tinypng_process_allow_overwrite():
     (fake_fs, fake_os, fake_open) = init_filesystem()
 
     utils.os = fake_os
+    utils.open = fake_open
     pytinypng.os = fake_os
     pytinypng.open = fake_open
 

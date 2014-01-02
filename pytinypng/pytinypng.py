@@ -8,6 +8,7 @@ from api import shrink
 from handlers import ScreenHandler
 from utils import files_with_exts, target_path, write_binary, read_binary
 
+
 TINYPNG_SLEEP_SEC = 1
 
 
@@ -20,14 +21,14 @@ class RetryProcessing(Exception):
 
 
 def _process_file(input_file, output_file, apikey, callback=None):
-    bytes_ = open(input_file, 'rb').read()
+    bytes_ = read_binary(input_file)
     compressed = shrink(bytes_, apikey)
 
     if callback:
         callback(compressed, input_file=input_file)
 
     if compressed.success and compressed.bytes:
-        open(output_file, 'wb').write(compressed.bytes)
+        write_binary(output_file, compressed.bytes)
     else:
         if compressed.errno in FATAL_ERRORS:
             raise StopProcessing()
@@ -37,7 +38,7 @@ def _process_file(input_file, output_file, apikey, callback=None):
     return compressed
 
 
-def process_directory(source, dest, apikey, handler, allow_overwrite=False):
+def process_directory(source, dest, apikey, handler, overwrite=False):
     """
     @type: handler: Handler
     """
@@ -52,9 +53,8 @@ def process_directory(source, dest, apikey, handler, allow_overwrite=False):
 
     while current_file:
         dirname, basename, output_file = target_path(source, dest, current_file)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
-        elif os.path.exists(output_file) and not allow_overwrite:
+
+        if os.path.exists(output_file) and not overwrite:
             handler.on_skip(current_file)
             current_file = next_()
             continue

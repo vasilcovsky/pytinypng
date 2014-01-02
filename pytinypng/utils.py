@@ -10,6 +10,9 @@ class Enum:
 
 
 def write_binary(filename, data):
+    dir = os.path.dirname(filename)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
     with open(filename, 'wb') as f:
         f.write(data)
 
