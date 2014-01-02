@@ -4,33 +4,13 @@ import argparse
 from collections import defaultdict
 from domain import TinyPNGError
 from api import shrink
+from handlers import ScreenHandler
 from utils import files_with_exts, target_path
-import screen
 
 TINYPNG_SLEEP_SEC = 1
 
 class StopProcessing(Exception): pass
 class RetryProcessing(Exception): pass
-
-
-class Handler:
-    def on_start(self):
-        pass
-
-    def on_retry(self, input_file):
-        pass
-
-    def on_skip(self, input_file):
-        pass
-
-    def on_pre_item(self, input_file):
-        pass
-
-    def on_post_item(self, image, input_file):
-        pass
-
-    def on_finish(self):
-        pass
 
 
 def _process_file(input_file, output_file, apikey, callback=None):
@@ -102,10 +82,9 @@ if __name__ == '__main__':
     input_dir = os.path.realpath(args.input)
     output_dir = os.path.relpath(args.output)
 
+    handler = ScreenHandler()
+
     try:
-        process_directory(input_dir, output_dir, args.apikey,
-                                  item_callback=screen.item_row,
-                                  skip_callback=screen.skip_item,
-                                  begin_callback=screen.table_header)
+        process_directory(input_dir, output_dir, args.apikey, handler)
     except KeyboardInterrupt:
         pass

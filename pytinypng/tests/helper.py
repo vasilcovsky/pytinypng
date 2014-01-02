@@ -3,7 +3,8 @@ import httpretty
 import fake_filesystem
 from contextlib import contextmanager
 from pytinypng.api import TINYPNG_SHRINK_URL
-from pytinypng.pytinypng import Handler
+from pytinypng.handlers import BaseHandler
+
 
 @contextmanager
 def success_result():
@@ -53,7 +54,7 @@ def init_filesystem():
     return (fake_fs, fake_os, fake_open)
 
 
-class TestHandler(Handler):
+class TestHandler(BaseHandler):
     def __init__(self):
         self.retry_no = 0
         self.skip_no = 0
