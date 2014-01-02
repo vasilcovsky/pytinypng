@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from pytinypng import __version__
 
 print __version__
@@ -15,9 +15,13 @@ setup(
     author_email='vasilcovsky@gmail.com',
     url='http://github.com/vasilcovsky/pytinypng.py',
     license='BSD License',
-    packages=['pytinypng'],
+    packages=find_packages(exclude=['tests']),
     install_requires=[],
-    scripts=['pytinypng/bin/pytinypng.py'],
+    entry_points = {
+        'console_scripts': [
+            'pytinypng = pytinypng.pytinypng:main'
+        ]
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

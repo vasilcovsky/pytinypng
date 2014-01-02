@@ -103,8 +103,8 @@ def process_directory(source, target, apikey, handler, overwrite=False):
     handler.on_finish()
 
 
-def main(args):
-    """Program entry point
+def _main(args):
+    """Batch compression.
 
     args contains:
      * input - path to input directory
@@ -125,3 +125,21 @@ def main(args):
         process_directory(input_dir, output_dir, args.apikey, handler)
     except KeyboardInterrupt:
         handler.on_finish()
+
+
+def main():
+    """Program entry point"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input',
+                        metavar='INPUT',
+                        help='Input directory with PNG files')
+    parser.add_argument('output', nargs='?',
+                        metavar='OUTPUT',
+                        help='Output directory')
+    parser.add_argument('--apikey',
+                        metavar='APIKEY',
+                        default=find_apikey(),
+                        help='TinyPNG API Key')
+
+    args = parser.parse_args()
+    _main(args)
