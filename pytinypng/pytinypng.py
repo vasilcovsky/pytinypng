@@ -12,11 +12,32 @@ TINYPNG_SLEEP_SEC = 1
 class StopProcessing(Exception): pass
 class RetryProcessing(Exception): pass
 
+
+class Handler:
+    def on_start(self):
+        pass
+
+    def on_retry(self, input_file):
+        pass
+
+    def on_skip(self, input_file):
+        pass
+
+    def on_pre_item(self, input_file):
+        pass
+
+    def on_post_item(self, image, input_file):
+        pass
+
+    def on_finish(self):
+        pass
+
+
 def _process_file(input_file, output_file, apikey, callback=None):
     bytes = open(input_file, 'rb').read()
     compressed = shrink(bytes, apikey)
     if callback:
-        callback(compressed, filename=input_file)
+        callback(compressed, input_file=input_file)
 
     if compressed.success and compressed.bytes:
         open(output_file, 'wb+').write(compressed.bytes)
@@ -29,11 +50,12 @@ def _process_file(input_file, output_file, apikey, callback=None):
     return compressed
 
 
-def process_directory(source, dest, apikey,
-                      item_callback=None, begin_callback=None, retry_callback=None, skip_callback=None, allow_overwrite=False):
+def process_directory(source, dest, apikey, handler, allow_overwrite=False):
+    """
+    @type: handler: Handler
+    """
 
-    if begin_callback:
-        begin_callback()
+    handler.on_start()
 
     attempts = defaultdict(lambda: 0)
     input_files = files_with_exts(source, suffix='.png')
@@ -44,19 +66,18 @@ def process_directory(source, dest, apikey,
         if not os.path.exists(dirname):
             os.makedirs(dirname)
         elif os.path.exists(output_file) and not allow_overwrite:
-            if skip_callback:
-                skip_callback(input_file)
+            handler.on_skip(input_file)
             input_file = next(input_files, None)
             continue
 
         try:
-            _process_file(input_file, output_file, apikey, item_callback)
+            handler.on_pre_item(input_file)
+            _process_file(input_file, output_file, apikey, handler.on_post_item)
             input_file = next(input_files, None)
         except StopProcessing:
             break
         except RetryProcessing:
-            if retry_callback:
-                retry_callback()
+            handler.on_retry(input_file)
             time.sleep(TINYPNG_SLEEP_SEC)
             if attempts[input_file] < 9:
                 attempts[input_file] += 1
