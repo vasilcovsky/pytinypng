@@ -26,6 +26,14 @@ class StopProcessing(RetryProcessing):
 
 
 def _process_file(input_file, output_file, apikey):
+    """Shrinks input_file to output_file.
+
+    This function should be used only inside process_directory.
+    It takes input_file, tries to shrink it and if shrink was successful
+    save compressed image to output_file. Otherwise raise exception.
+
+    @return compressed: PNGResponse
+    """
     bytes_ = read_binary(input_file)
     compressed = shrink(bytes_, apikey)
 
@@ -40,9 +48,14 @@ def _process_file(input_file, output_file, apikey):
     return compressed
 
 
-def process_directory(source, dest, apikey, handler, overwrite=False):
-    """
-    @type: handler: Handler
+def process_directory(source, target, apikey, handler, overwrite=False):
+    """Optimize and save png files form source to target directory.
+
+    @param source: path to input directory
+    @param target: path to output directory
+    @param handler: callback holder, instance of handlers.BaseHandler
+    @param overwrite: boolean flag to allow overwrite already existing
+                      files in output directory.
     """
 
     handler.on_start()
@@ -56,7 +69,7 @@ def process_directory(source, dest, apikey, handler, overwrite=False):
     last_processed = None
 
     while current_file:
-        output_file = target_path(source, dest, current_file)
+        output_file = target_path(source, target, current_file)
 
         if os.path.exists(output_file) and not overwrite:
             handler.on_skip(current_file)
@@ -70,17 +83,17 @@ def process_directory(source, dest, apikey, handler, overwrite=False):
 
             response = _process_file(current_file, output_file, apikey)
             current_file = next_()
-
         except StopProcessing as e:
+            # Unauthorized or exceed number of allowed monthly calls
             response = e.response
             handler.on_stop(response.errmsg)
             break
         except RetryProcessing as e:
+            # handle InternalServerError on tinypng side
             response = e.response
-            handler.on_retry(current_file)
-            time.sleep(TINYPNG_SLEEP_SEC)
-
             if attempts[current_file] < 9:
+                handler.on_retry(current_file)
+                time.sleep(TINYPNG_SLEEP_SEC)
                 attempts[current_file] += 1
             else:
                 current_file = next_()
@@ -91,6 +104,14 @@ def process_directory(source, dest, apikey, handler, overwrite=False):
 
 
 def main(args):
+    """Program entry point
+
+    args contains:
+     * input - path to input directory
+     * output - path to output directory or None
+     * apikey - TinyPNG API key
+     * overwrite - boolean flag
+    """
     input_dir = realpath(args.input)
 
     if not args.output:

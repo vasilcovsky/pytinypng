@@ -2,6 +2,16 @@ import os
 
 
 class Enum:
+    """Used to access integer constants by string code.
+
+    >>> class Color(Enum):
+    ...     RED = 1
+    ...     YELLOW = 2
+    ...     GREEN = 3
+    ...
+    >>> Color.from_value("RED")
+    1
+    """
     @classmethod
     def from_value(cls, value):
         if value in cls.__dict__:
@@ -10,6 +20,7 @@ class Enum:
 
 
 def write_binary(filename, data):
+    """Create path to filename and saves binary data"""
     dir = os.path.dirname(filename)
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -18,11 +29,15 @@ def write_binary(filename, data):
 
 
 def read_binary(filename):
+    """Read binary data from filename"""
     with open(filename, 'rb') as f:
         return f.read()
 
 
 def files_with_exts(root='.', suffix=''):
+    """Returns generator that contains filenames
+       from root directory and ends with suffix
+    """
     return (os.path.join(rootdir, filename)
             for rootdir, dirnames, filenames in os.walk(root)
             for filename in filenames
@@ -38,6 +53,10 @@ def target_path(source_dir, target_dir, input_file):
 
 
 def size_fmt(num):
+    """Generate a string representation for the given byte count.
+    >>> size_fmt(12345)
+    '12.1KB'
+    """
     for x in ['b', 'KB', 'MB', 'GB']:
         if num < 1024.0:
             return "%.1f%s" % (num, x)

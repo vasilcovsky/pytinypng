@@ -12,6 +12,14 @@ TINYPNG_SHRINK_URL = "https://api.tinypng.com/shrink"
 
 
 def shrink(image, apikey, filename=None):
+    """To shrink a PNG image, post the data to the API service.
+    The response is a JSON message.
+    The initial request must be authorized with HTTP Basic authorization.
+
+    @param image: PNG image bytes sequence
+    @param apikey: TinyPNG API key
+    @param filename: filename of input file
+    """
     def _handle_response(response):
         json_res = json.loads(response.read())
         if response.code == TinyPNGResponse.SUCCESS_CODE:
@@ -26,9 +34,11 @@ def shrink(image, apikey, filename=None):
     if not apikey:
         raise ValueError("TinyPNG API KEY is not set")
 
-    request = Request(TINYPNG_SHRINK_URL, image)
     auth = b64encode(bytes("api:" + apikey)).decode("ascii")
+
+    request = Request(TINYPNG_SHRINK_URL, image)
     request.add_header("Authorization", "Basic %s" % auth)
+
     try:
         response = urlopen(request)
         (code, response_dict) = _handle_response(response)

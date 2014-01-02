@@ -3,6 +3,7 @@ from utils import Enum
 
 
 class TinyPNGError(Enum):
+    """List of error codes returned by TinyPNG API"""
     Unauthorized = 1
     InputMissing = 2
     BadSignature = 3
@@ -15,6 +16,7 @@ FATAL_ERRORS = (TinyPNGError.Unauthorized, TinyPNGError.TooManyRequests)
 
 
 class TinyPNGResponse:
+    """Immutable class to represent TinyPNG response"""
 
     SUCCESS_CODE = 201
 
