@@ -9,6 +9,15 @@ class Enum:
         raise AttributeError("Not found value %s" % value)
 
 
+def write_binary(filename, data):
+    with open(filename, 'wb') as f:
+        f.write(data)
+
+
+def read_binary(filename):
+    with open(filename, 'rb') as f:
+        return f.read()
+
 def files_with_exts(root='.', suffix=''):
     return (os.path.join(rootdir, filename)
             for rootdir, dirnames, filenames in os.walk(root)

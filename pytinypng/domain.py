@@ -11,6 +11,9 @@ class TinyPNGError(Enum):
     InternalServerError = 6
 
 
+FATAL_ERRORS = (TinyPNGError.Unauthorized, TinyPNGError.TooManyRequests)
+
+
 class TinyPNGResponse:
 
     SUCCESS_CODE = 201

@@ -3,10 +3,10 @@ import time
 import argparse
 from os.path import realpath
 from collections import defaultdict
-from domain import TinyPNGError
+from domain import TinyPNGError, FATAL_ERRORS
 from api import shrink
 from handlers import ScreenHandler
-from utils import files_with_exts, target_path
+from utils import files_with_exts, target_path, write_binary, read_binary
 
 TINYPNG_SLEEP_SEC = 1
 
@@ -20,16 +20,16 @@ class RetryProcessing(Exception):
 
 
 def _process_file(input_file, output_file, apikey, callback=None):
-    bytes = open(input_file, 'rb').read()
-    compressed = shrink(bytes, apikey)
+    bytes_ = open(input_file, 'rb').read()
+    compressed = shrink(bytes_, apikey)
+
     if callback:
         callback(compressed, input_file=input_file)
 
     if compressed.success and compressed.bytes:
-        open(output_file, 'wb+').write(compressed.bytes)
+        open(output_file, 'wb').write(compressed.bytes)
     else:
-        if compressed.errno in (TinyPNGError.Unauthorized,
-                                TinyPNGError.TooManyRequests):
+        if compressed.errno in FATAL_ERRORS:
             raise StopProcessing()
         if compressed.errno == TinyPNGError.InternalServerError:
             raise RetryProcessing()
