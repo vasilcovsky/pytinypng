@@ -125,23 +125,3 @@ def main(args):
         process_directory(input_dir, output_dir, args.apikey, handler)
     except KeyboardInterrupt:
         handler.on_finish()
-
-
-if __name__ == '__main__':
-    """TODO:
-    add support for allow overwrite
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('input',
-                        metavar='INPUT',
-                        help='Input directory with PNG files')
-    parser.add_argument('output', nargs='?',
-                        metavar='OUTPUT',
-                        help='Output directory')
-    parser.add_argument('--apikey',
-                        metavar='APIKEY',
-                        default=find_apikey(),
-                        help='TinyPNG API Key')
-
-    args = parser.parse_args()
-    main(args)

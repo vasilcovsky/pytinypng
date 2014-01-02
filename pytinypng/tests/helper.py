@@ -22,7 +22,7 @@ def success_result():
                            location=compressed_img_location,
                            status=201)
     httpretty.register_uri(httpretty.GET, compressed_img_location,
-                           content_type="image/png", status=200, 
+                           content_type="image/png", status=200,
                            body='<compressed image bytes>')
     yield
     httpretty.disable()
@@ -80,4 +80,3 @@ class TestHandler(BaseHandler):
 
     def on_start(self):
         self.start_no += 1
-
