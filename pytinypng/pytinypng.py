@@ -77,10 +77,12 @@ def main(args):
     else:
         output_dir = os.path.relpath(args.output)
 
+    handler = ScreenHandler()
+
     try:
-        process_directory(input_dir, output_dir, args.apikey, ScreenHandler())
+        process_directory(input_dir, output_dir, args.apikey, handler)
     except KeyboardInterrupt:
-        pass
+        handler.on_finish()
 
 
 if __name__ == '__main__':

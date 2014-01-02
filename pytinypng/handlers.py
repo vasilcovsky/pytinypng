@@ -1,5 +1,5 @@
 from __future__ import print_function
-import os
+from utils import size_fmt, bold, yellow, red, green
 
 class BaseHandler:
     def __init__(self):
@@ -25,16 +25,6 @@ class BaseHandler:
 
     def on_finish(self):
         pass
-
-
-def _decorated_msg(code):
-    return lambda msg: code + msg + '\033[0m'
-
-
-bold = _decorated_msg('\033[1m')
-green = _decorated_msg('\033[92m')
-red = _decorated_msg('\033[91m')
-yellow = _decorated_msg('\033[93m')
 
 
 class ScreenHandler(BaseHandler):
@@ -66,9 +56,10 @@ class ScreenHandler(BaseHandler):
         print("\n%s %45s %40s\n" % (bold("FILE"), bold("STATUS"), bold("RATIO")))
 
     def on_finish(self):
-        optimized = "%(optimized)s (%(input)s -> %(output)s) bytes" % dict(optimized=self._optimized,
-                                                                        input=self._input_bytes,
-                                                                        output=self._output_bytes)
+        optimized = "%(optimized)s (%(input)s -> %(output)s)"
+        optimized = optimized % dict(optimized=self._optimized,
+                                     input=size_fmt(self._input_bytes),
+                                     output=size_fmt(self._output_bytes))
         print()
         print(bold("Optimized: ") + optimized, end="\t")
         print(bold("Skipped: ") + str(self._skipped), end="\t")
