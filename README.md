@@ -14,18 +14,18 @@ already have it installed.
 
 If you are on Mac OS X or Linux, chances are that one of the following two commands will work for you:
 
-```$ sudo easy_install pytinypng```
+    $ sudo easy_install pytinypng
 
 or even better:
 
-```$ sudo pip install pytinypng```
+    $ sudo pip install pytinypng
 
 Next, you should obtain the TinyPNG API key from the [Developer API page](https://tinypng.com/developers) page.
 
 ## Usage
 Run in terminal:
 
-```pytinypng /path/to/directory/with/png-images /path/to/output-directory --apikey <API_KEY>```
+    pytinypng /path/to/directory/with/png-images /path/to/output-directory --apikey <API_KEY>
 
 You can hide api key from command line in:
   * environment variable *TINYPNG_APIKEY* or *TINYPNG_API_KEY*
