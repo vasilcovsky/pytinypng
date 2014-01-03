@@ -29,6 +29,6 @@ Run in terminal:
 ```pytinypng <input-directory> <output-directory> --apikey <API_KEY>```
 
 You can hide api key in:
-  * in environment variable *TINYPNG_APIKEY* or *TINYPNG_API_KEY*
+  * environment variable *TINYPNG_APIKEY* or *TINYPNG_API_KEY*
   * or save it inside working directory under name *tinypng.key*
   * or keep in your home directory as *~/.tinypng.key*
