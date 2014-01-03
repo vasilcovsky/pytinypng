@@ -21,14 +21,14 @@ or even better:
 ```$ sudo pip install pytinypng```
 
 and then obtain TinyPNG API key from
-[Developer API page](https://api.tinypng.com/developers).
+[Developer API page](https://api.tinypng.com/).
 
 ## Usage
 Run in terminal:
 
-```pytinypng <input-directory> <output-directory> --apikey <API_KEY>```
+```pytinypng /path/to/directory/with/png-images /path/to/output-directory --apikey <API_KEY>```
 
-You can hide api key in:
+You can hide api key from command line in:
   * environment variable *TINYPNG_APIKEY* or *TINYPNG_API_KEY*
-  * or save it inside working directory under name *tinypng.key*
+  * inside file located in working directory under name *tinypng.key*
   * or keep in your home directory as *~/.tinypng.key*
