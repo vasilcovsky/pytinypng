@@ -15,12 +15,6 @@ def test_tinypng_compress():
         assert compressed.errno == None
 
 
-def test_tinypng_compress_empty_key():
-    """tinypng_compress should raise ValueError if apikey is empty""" 
-    with pytest.raises(ValueError):
-        compressed = shrink('<image bytes>', '')
-
-
 def test_tinypng_compress_error():
     with failure():
         compressed = shrink('<image bytes>', apikey='12345')

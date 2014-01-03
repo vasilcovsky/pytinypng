@@ -1,6 +1,6 @@
 from __future__ import print_function
 from utils import size_fmt, bold, yellow, red, green
-
+from os import path
 
 class BaseHandler:
     def __init__(self):
@@ -15,13 +15,13 @@ class BaseHandler:
     def on_retry(self, input_file):
         pass
 
-    def on_skip(self, input_file):
+    def on_skip(self, input_file, **kwargs):
         pass
 
-    def on_pre_item(self, input_file):
+    def on_pre_item(self, input_file, **kwargs):
         pass
 
-    def on_post_item(self, image, input_file):
+    def on_post_item(self, image, **kwargs):
         pass
 
     def on_finish(self):
@@ -37,13 +37,19 @@ class ScreenHandler(BaseHandler):
         self._input_bytes = 0
         self._output_bytes = 0
 
-    def on_skip(self, input_file):
+    def on_skip(self, input_file, **kwargs):
+        source = kwargs.get('source', '')
+
         self._skipped += 1
-        filename = self.format_filename(input_file)
+
+        filename = self.format_filename(input_file.replace(source, ''))
         print("%s %18s %30s" % (filename, yellow("SKIP"), "-"))
 
-    def on_post_item(self, response, input_file):
-        filename = self.format_filename(input_file)
+    def on_post_item(self, response, **kwargs):
+        input_file = kwargs.get('input_file', '')
+        source = kwargs.get('source', '')
+
+        filename = self.format_filename(input_file.replace(source, ''))
         if response.success:
             self._optimized += 1
             self._input_bytes += response.input_size
@@ -74,8 +80,11 @@ class ScreenHandler(BaseHandler):
         print("\n\n")
 
     def format_filename(self, filename):
-        filename_ = filename[-27:].ljust(27, ' ')
-        if filename > 30:
-            filename_ = '...' + filename_
+        if filename.startswith(path.sep):
+            filename = filename[1:]
 
+        filename_ = filename[-30:]
+        if len(filename) > 30:
+            filename_ = '...' + filename_[3:]
+        filename_ = filename_.ljust(30, ' ')
         return filename_

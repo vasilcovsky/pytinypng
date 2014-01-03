@@ -86,7 +86,7 @@ def find_apikey():
 
     for path in paths:
         if os.path.exists(path):
-            return open(path, 'rt').read()
+            return open(path, 'rt').read().strip()
 
     return None
 

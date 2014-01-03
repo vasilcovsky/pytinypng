@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import argparse
 from os.path import realpath
@@ -72,7 +73,7 @@ def process_directory(source, target, apikey, handler, overwrite=False):
         output_file = target_path(source, target, current_file)
 
         if os.path.exists(output_file) and not overwrite:
-            handler.on_skip(current_file)
+            handler.on_skip(current_file, source=source)
             current_file = next_()
             continue
 
@@ -98,7 +99,7 @@ def process_directory(source, target, apikey, handler, overwrite=False):
             else:
                 current_file = next_()
         finally:
-            handler.on_post_item(response, last_processed)
+            handler.on_post_item(response, input_file=last_processed, source=source)
 
     handler.on_finish()
 
@@ -112,6 +113,14 @@ def _main(args):
      * apikey - TinyPNG API key
      * overwrite - boolean flag
     """
+
+    if not args.apikey:
+        print("")
+        print("Please provide TinyPNG API key")
+        print("To obtain key, visit https://api.tinypng.com/developers")
+        print("")
+        sys.exit(1)
+
     input_dir = realpath(args.input)
 
     if not args.output:
@@ -143,3 +152,7 @@ def main():
 
     args = parser.parse_args()
     _main(args)
+
+
+if __name__ == '__main__':
+    main()
