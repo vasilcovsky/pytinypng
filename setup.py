@@ -4,7 +4,7 @@ from pytinypng import __version__
 print __version__
 
 setup(
-    name='pytinypng.py',
+    name='pytinypng',
     version=__version__,
     description='Batch compression for PNG images',
     long_description='pytinypng.py is a batch image compression tool for optimizing '
