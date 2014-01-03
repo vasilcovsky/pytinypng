@@ -21,7 +21,7 @@ or even better:
 ```$ sudo pip install pytinypng```
 
 and then obtain TinyPNG API key from
-[Developer API page](https://api.tinypng.com/developers).
+[Developer API page](https://api.tinypng.com/).
 
 ## Usage
 Run in terminal:
