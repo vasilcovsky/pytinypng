@@ -26,7 +26,7 @@ and then obtain TinyPNG API key from
 ## Usage
 Run in terminal:
 
-```pytinypng <input-directory> <output-directory> --apikey <API_KEY>```
+```pytinypng /path/to/directory/with/png-images /path/to/output-directory --apikey <API_KEY>```
 
 You can hide api key from command line in:
   * environment variable *TINYPNG_APIKEY* or *TINYPNG_API_KEY*
