@@ -66,16 +66,16 @@ class TestHandler(BaseHandler):
     def on_retry(self, input_file):
         self.retry_no += 1
 
-    def on_skip(self, input_file):
+    def on_skip(self, input_file, **kwargs):
         self.skip_no += 1
 
-    def on_finish(self):
+    def on_finish(self, **kwargs):
         self.finish_no += 1
 
-    def on_pre_item(self, input_file):
+    def on_pre_item(self, input_file, **kwargs):
         self.pre_no += 1
 
-    def on_post_item(self, image, input_file):
+    def on_post_item(self, image, **kwargs):
         self.post_no += 1
 
     def on_start(self):

@@ -101,7 +101,7 @@ def process_directory(source, target, apikey, handler, overwrite=False):
         finally:
             handler.on_post_item(response, input_file=last_processed, source=source)
 
-    handler.on_finish()
+    handler.on_finish(output_dir=target)
 
 
 def _main(args):
@@ -115,10 +115,8 @@ def _main(args):
     """
 
     if not args.apikey:
-        print("")
-        print("Please provide TinyPNG API key")
-        print("To obtain key, visit https://api.tinypng.com/developers")
-        print("")
+        print("\nPlease provide TinyPNG API key")
+        print("To obtain key visit https://api.tinypng.com/developers\n")
         sys.exit(1)
 
     input_dir = realpath(args.input)
@@ -128,12 +126,16 @@ def _main(args):
     else:
         output_dir = realpath(args.output)
 
+    if input_dir == output_dir:
+        print("\nPlease specify different output directory\n")
+        sys.exit(1)
+
     handler = ScreenHandler()
 
     try:
         process_directory(input_dir, output_dir, args.apikey, handler)
     except KeyboardInterrupt:
-        handler.on_finish()
+        handler.on_finish(output_dir=output_dir)
 
 
 def main():

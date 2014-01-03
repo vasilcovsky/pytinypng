@@ -24,7 +24,7 @@ class BaseHandler:
     def on_post_item(self, image, **kwargs):
         pass
 
-    def on_finish(self):
+    def on_finish(self, **kwargs):
         pass
 
 
@@ -68,7 +68,8 @@ class ScreenHandler(BaseHandler):
         print("Error: " + errmsg)
         print()
 
-    def on_finish(self):
+    def on_finish(self, **kwargs):
+        output_dir = kwargs.get('output_dir', '')
         optimized = "%(optimized)s (%(input)s -> %(output)s)"
         optimized = optimized % dict(optimized=self._optimized,
                                      input=size_fmt(self._input_bytes),
@@ -77,6 +78,8 @@ class ScreenHandler(BaseHandler):
         print(bold("Optimized: ") + optimized, end="\t")
         print(bold("Skipped: ") + str(self._skipped), end="\t")
         print(bold("Failed: ") + str(self._failed), end="\t")
+        print("\n")
+        print("Optimized files were saved to:\n%s" % output_dir)
         print("\n\n")
 
     def format_filename(self, filename):
