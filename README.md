@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/vasilcovsky/pytinypng.svg?branch=master)](https://travis-ci.org/vasilcovsky/pytinypng)
+
 #  Batch compression for PNG images
 
 **pytinypng** is a batch image compression tool for optimizing thousands of images in png format. Under the hood it uses [tinypng.com](http://tinypng.com) API to shrink png files.
